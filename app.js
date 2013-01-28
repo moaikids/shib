@@ -3,6 +3,7 @@ var express = require('express'),
     async = require('async'),
     app = express.createServer();
 
+
 var SHOW_HISTORY_MONTH = 4;
 var MAX_ACCORDION_SIZE = 20;
 var SHOW_RESULT_HEAD_LINES = 20;
