@@ -17,6 +17,7 @@ if (process.env.NODE_ENV === 'production') {
   servers = require('./production').servers;
 }
 shib.init(servers);
+var shibport = servers.shib && servers.shib.port ? servers.shib.port : 3000
 
 var runningQueries = {};
 
@@ -26,10 +27,28 @@ function error_handle(req, res, err){
   res.send(err, 500);
 };
 
+var basic_auth = function(user, pass){
+  for (var i = 0 , len = servers.shib.users.length ; i < len ; i++){
+    var u = servers.shib.users[i];
+	var n = u.username ? u.username.trim() : null,
+	    p = u.password ? u.password.trim() : null;
+	if(!n || !p){
+	  continue;
+	}
+    if(n == user.trim() && p == pass.trim()){
+      return true;
+	}
+  }
+  return false;
+};
+
 app.configure(function(){
   app.use(express.logger('default'));
   app.use(express.methodOverride());
   app.use(express.bodyParser());
+  if(servers.shib && servers.shib.auth == 'basic' && servers.shib.users && servers.shib.users.length > 0){
+    app.use(express.basicAuth(basic_auth));
+  }
   app.use(app.router);
   app.set('view options', {layout: false});
 });
@@ -438,4 +457,6 @@ app.get('/download/csv/:resultid', function(req, res){
   });
 });
 
-app.listen(3000);
+
+//app.listen(3000);
+app.listen(shibport);
