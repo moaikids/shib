@@ -16,7 +16,7 @@ var servers = exports.servers = {
     port: 9010
   },
   shib: {
-    auth: 'none'
+    auth: 'none',
 	port: 3000
   }
 };

@@ -27,6 +27,10 @@ function error_handle(req, res, err){
   res.send(err, 500);
 };
 
+function doAuth(){
+  return servers.shib && servers.shib.auth == 'basic' && servers.shib.users && servers.shib.users.length > 0;
+};
+
 var basic_auth = function(user, pass){
   for (var i = 0 , len = servers.shib.users.length ; i < len ; i++){
     var u = servers.shib.users[i];
@@ -46,7 +50,7 @@ app.configure(function(){
   app.use(express.logger('default'));
   app.use(express.methodOverride());
   app.use(express.bodyParser());
-  if(servers.shib && servers.shib.auth == 'basic' && servers.shib.users && servers.shib.users.length > 0){
+  if(doAuth()){
     app.use(express.basicAuth(basic_auth));
   }
   app.use(app.router);
